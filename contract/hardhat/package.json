@@ -1,5 +1,12 @@
 {
   "name": "hardhat",
   "version": "1.0.0",
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "@nomicfoundation/hardhat-toolbox-viem": "^5.0.4",
+    "forge-std": "^1.1.2",
+    "hardhat": "^3.4.3",
+    "solc": "^0.8.28",
+    "typescript": "^6.0.3"
+  }
 }

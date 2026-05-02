@@ -1,56 +1,81 @@
-# Sample Hardhat 3 Beta Project (`node:test` and `viem`)
+# MansaTrade – Hardhat 3 Test Suite
 
-This project showcases a Hardhat 3 Beta project using the native Node.js test runner (`node:test`) and the `viem` library for Ethereum interactions.
+P2P smart-contract tests for the MansaTrade EVM contract, written with the native Node.js test runner and [viem](https://viem.sh/).
 
-To learn more about the Hardhat 3 Beta, please visit the [Getting Started guide](https://hardhat.org/docs/getting-started#getting-started-with-hardhat-3). To share your feedback, join our [Hardhat 3 Beta](https://hardhat.org/hardhat3-beta-telegram-group) Telegram group or [open an issue](https://github.com/NomicFoundation/hardhat/issues/new) in our GitHub issue tracker.
+---
 
-## Project Overview
+## Requirements
 
-This example project includes:
+| Tool | Version |
+|------|---------|
+| Node.js | >= 22 |
+| npm | >= 10 |
 
-- A simple Hardhat configuration file.
-- Foundry-compatible Solidity unit tests.
-- TypeScript integration tests using [`node:test`](nodejs.org/api/test.html), the new Node.js native test runner, and [`viem`](https://viem.sh/).
-- Examples demonstrating how to connect to different types of networks, including locally simulating OP mainnet.
+---
 
-## Usage
+## Setup
 
-### Running Tests
+From the repo root, navigate to the hardhat project and install dependencies:
 
-To run all the tests in the project, execute the following command:
+```shell
+cd contract/hardhat
+npm install
+```
+
+---
+
+## Running Tests
+
+Run only the TypeScript (node:test) tests — this is what you want for the MansaTrade suite:
+
+```shell
+npx hardhat test nodejs
+```
+
+Run all tests (TypeScript + Solidity):
 
 ```shell
 npx hardhat test
 ```
 
-You can also selectively run the Solidity or `node:test` tests:
+---
 
-```shell
-npx hardhat test solidity
-npx hardhat test nodejs
+## Project Structure
+
+```
+contract/hardhat/
+├── contracts/
+│   └── src/
+│       ├── Counter.sol       # sample counter contract
+│       └── MansaTrade.sol    # main P2P trade contract
+├── test/
+│   ├── Counter.ts            # counter tests
+│   └── MansaTrade.ts         # createOffer tests  ← new
+├── hardhat.config.ts
+└── package.json
 ```
 
-### Make a deployment to Sepolia
+---
 
-This project includes an example Ignition module to deploy the contract. You can deploy this module to a locally simulated chain or to Sepolia.
+## What was fixed to get tests running
 
-To run the deployment to a local chain:
+- **Compiler cache** – the environment has no outbound internet access so the Solidity compiler could not be auto-downloaded. Fixed by installing `solc` via npm and seeding the Hardhat compiler cache manually (`~/.cache/hardhat-nodejs/compilers-v3/`).
 
-```shell
-npx hardhat ignition deploy ignition/modules/Counter.ts
-```
+- **Foundry test collision** – `Counter.t.sol` imports `forge-std` / `ds-test` which are Foundry-only and break the Hardhat compiler step. Fixed by setting `paths.sources` to `contracts/src/` so only actual contracts are compiled; the Foundry test file stays untouched but is no longer picked up.
 
-To run the deployment to Sepolia, you need an account with funds to send the transaction. The provided Hardhat configuration includes a Configuration Variable called `SEPOLIA_PRIVATE_KEY`, which you can use to set the private key of the account you want to use.
+- **Pragma mismatch** – the original `mansatrade.sol` pins `pragma solidity 0.8.17;` while the installed compiler is `0.8.28`. The copy in `contracts/src/` uses `>=0.8.17 <=0.8.28` so the existing compiler can handle it without changing the original file.
 
-You can set the `SEPOLIA_PRIVATE_KEY` variable using the `hardhat-keystore` plugin or by setting it as an environment variable.
+---
 
-To set the `SEPOLIA_PRIVATE_KEY` config variable using `hardhat-keystore`:
+## Deploying to Sepolia
+
+Set your private key first:
 
 ```shell
 npx hardhat keystore set SEPOLIA_PRIVATE_KEY
 ```
 
-After setting the variable, you can run the deployment with the Sepolia network:
+Then deploy:
 
 ```shell
 npx hardhat ignition deploy --network sepolia ignition/modules/Counter.ts
