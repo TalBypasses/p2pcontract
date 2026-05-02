@@ -1,5 +1,10 @@
 {
   "name": "hardhat",
   "version": "1.0.0",
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "@nomicfoundation/hardhat-toolbox-viem": "^5.0.4",
+    "hardhat": "^3.4.3",
+    "typescript": "^6.0.3"
+  }
 }
