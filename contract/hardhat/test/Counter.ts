@@ -1,3 +1,9 @@
+// contracts/src/ was added so Hardhat ignores Counter.t.sol — that file
+// imports forge-std which isn't installed here (it's Foundry-only).
+//
+// SEPOLIA_RPC_URL and SEPOLIA_PRIVATE_KEY are only needed if you're running
+// against the live Sepolia network, not for these local tests.
+
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
